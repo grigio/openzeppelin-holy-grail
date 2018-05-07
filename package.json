@@ -1,0 +1,41 @@
+{
+  "name": "openzeppelin-holy-grail",
+  "version": "0.0.1",
+  "description": "A smart contract example with Typescript, Truffle, Ganache, Soltsice, Zeppelin and more",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "fix-yarn": "dos2unix -F node_modules/.bin/soltsice",
+    "test": "bin/compile && bin/test",
+    "compile": "bin/compile"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grigio/openzeppelin-holy-grail.git"
+  },
+  "author": "Luigi Maselli",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fgrigio/openzeppelin-holy-grail/issues"
+  },
+  "homepage": "https://github.com/grigio/openzeppelin-holy-grailp#readme",
+  "dependencies": {
+    "@types/chai": "~4.1.3",
+    "@types/chai-as-promised": "~7.1.0",
+    "@types/mocha": "~5.2.0",
+    "@types/node": "~9.6.7",
+    "bignumber.js": "~4.0.2",
+    "chai": "~4.1.0",
+    "chai-as-promised": "~7.1.1",
+    "chai-bignumber": "~2.0.1",
+    "ganache-cli": "^6.1.0",
+    "soltsice": "~0.11.5",
+    "truffle": "~4.1.7",
+    "ts-node": "~6.0.1",
+    "typescript": "~2.8.3",
+    "zeppelin-solidity": "~1.9.0"
+  },
+  "comments": "upgrade @types/node to node 10 and bignuber when possible"
+}

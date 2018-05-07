@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Exit script as soon as a command fails.
+set -o errexit
+
+remove_contract_artifacts() {
+  if [ -d ./build ]; then
+    rm -r ./build
+  fi
+}
+
+remove_contract_ts_types() {
+  if [ -d ./types ]; then
+    rm -r ./types
+  fi
+}
+
+compile_contracts() {
+  remove_contract_artifacts
+  node_modules/.bin/truffle compile
+}
+
+compile_ts_types() {
+  remove_contract_ts_types
+  node_modules/.bin/soltsice build/contracts/ types/
+}
+
+compile_contracts
+compile_ts_types

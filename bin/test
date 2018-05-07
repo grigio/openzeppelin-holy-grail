@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# Exit script as soon as a command fails.
+set -o errexit
+
+# Executes cleanup function at script exit.
+trap cleanup EXIT
+# kill $(pgrep -f ganache-cli)
+cleanup() {
+  # Kill the testrpc instance that we started (if we started one and if it's still running).
+  if descendant_testrpc_exists; then
+    kill_descendant_testrpc "$background_pid"
+  fi
+}
+
+if [ "$SOLIDITY_COVERAGE" = true ]; then
+  testrpc_port=8555
+else
+  testrpc_port=8545
+fi
+
+kill_descendant_testrpc() {
+  pkill -f ganache-cli > /dev/null
+}
+
+descendant_testrpc_exists() {
+  pgrep -f ganache-cli > /dev/null
+}
+
+testrpc_running() {
+  nc -z localhost "$testrpc_port"
+}
+
+testrpc() {
+  if [ "$SOLIDITY_COVERAGE" = true ]; then
+    node_modules/.bin/ganache-cli --gasLimit 0xfffffffffff --port "$testrpc_port" "$@"
+  else
+    node_modules/.bin/ganache-cli "$@"
+  fi
+}
+
+remove_compiled_tests() {
+  if [ -d ./js_test ]; then
+    rm -r ./js_test
+  fi
+}
+
+compile_tests() {
+  remove_compiled_tests
+
+  # Copy over files so we include things like mock contracts
+  cp -r ./test ./js_test
+  cp -r ./build ./js_test
+
+  # Compile into the js_test directory
+  node_modules/.bin/tsc
+}
+
+compiled_test_files() {
+  # Return a list of compiled test files
+  find js_test -type f
+}
+
+if testrpc_running; then
+  echo "► Using existing ganache-cli instance"
+else
+  echo "⚡ Starting our own ganache-cli instance"
+  node_modules/.bin/ganache-cli --gasLimit 100000000 > /dev/null &
+  background_pid="$!"
+fi
+
+if [ "$SOLIDITY_COVERAGE" = true ]; then
+  node_modules/.bin/solidity-coverage
+else
+  compile_tests
+  echo "Running tests..."
+  compiled_test_files | xargs node_modules/.bin/truffle test "$@"
+fi
